@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.weahter.com.coolweather.model.City;
+import app.weahter.com.coolweather.model.County;
 import app.weahter.com.coolweather.model.Province;
 
 /**
@@ -89,5 +90,31 @@ public class CoolWeatherDB {
         return list;
     }
     //将县扽信息存入数据库中
+    public void saveCounty(County county){
+        if(county  != null){
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("county_name",county.getCountyName());
+            contentValues.put("county_code",county.getCountyCode());
+            contentValues.put("city_id",county.getCityId());
+            db.insert("County",null,contentValues);
+        }
+    }
     //从数据库中读取县的信息
+    public List<County> loadCounty(int cityId){
+        List<County> list = new ArrayList<County>();
+        Cursor cursor = db.query("County", null, "province_id = ?",
+                new String[] { String.valueOf(cityId) }, null, null, null);
+        if(cursor.moveToFirst()){
+            do{
+                County county = new County();
+                county.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                county.setCountyName(cursor.getString(cursor.getColumnIndex("county_name")));
+                county.setCountyName(cursor.getString(cursor.getColumnIndex("county_code")));
+                county.setCityId(cursor.getInt(cursor.getColumnIndex("city_id")));
+                list.add(county);
+            }while(cursor.moveToNext());
+
+        }
+        return list;
+    }
 }
